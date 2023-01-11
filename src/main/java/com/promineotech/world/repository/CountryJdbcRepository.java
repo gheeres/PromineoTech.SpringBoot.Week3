@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import com.promineotech.world.models.CountryInputModel;
 import com.promineotech.world.models.CountryModel;
 
 @Repository
@@ -37,10 +38,27 @@ public class CountryJdbcRepository implements CountryRepository {
     return country;
   }
   
+  /**
+   * Gets the default SQL statement. 
+   * @param where The optional WHERE parameter / filter.
+   * @return The SQL SELECT statement.
+   */
+  public String getDefaultQueryString(String where) {
+    return String.format("SELECT " +
+                         "  country_code, " +
+                         "  country_name, " +
+                         "  country_population " + 
+                         "FROM country " +
+                         " %s " +
+                         "ORDER BY country_name " +
+                         ";", 
+      (where != null) ? " WHERE " + where : ""
+    );
+  }
+  
   @Override
   public Optional<CountryModel> get(String code) {
-    String sql = "SELECT country_code, country_name, country_population "
-               + " FROM country WHERE country_code = :country_code";
+    String sql = getDefaultQueryString("country_code = :country_code");
     Map<String,Object> parameters = new HashMap<>();
     parameters.put("country_code", code);
     
@@ -65,5 +83,41 @@ public class CountryJdbcRepository implements CountryRepository {
     });
 
     return countries.stream();
+  }
+
+  @Override
+  public Optional<CountryModel> add(CountryInputModel input) {
+    if ((input != null) && (input.isValid())) {
+      String sql = "INSERT INTO country (country_code, country_code2, country_name) "
+                 + "VALUES (:country_code, :country_code2, :country_name)";
+      Map<String,Object> parameters = new HashMap<>();
+      parameters.put("country_code", input.getCode());
+      parameters.put("country_code2", input.getCode2());
+      parameters.put("country_name", input.getName());
+
+      int rows = provider.update(sql, parameters);
+      if (rows == 1) {
+        return get(input.getCode());
+      }
+    }
+    return Optional.empty();
+  }
+
+  @Override
+  public Optional<CountryModel> delete(String code) {
+    if (code != null) {
+      Optional<CountryModel> existing = get(code);
+      if (existing.isPresent()) {
+        String sql = "DELETE FROM country WHERE country_code = :country_code";
+        Map<String,Object> parameters = new HashMap<>();
+        parameters.put("country_code", code);
+        
+        int rows = provider.update(sql, parameters);
+        if (rows == 1) {
+          return existing;
+        }
+      }
+    }
+    return Optional.empty();
   }
 }

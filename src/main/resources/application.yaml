@@ -1,6 +1,11 @@
 spring:
   datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost/myworld
     username: root
     password: password
-    driver-class-name: com.mysql.cj.jdbc.Driver
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    disable-swagger-default-url: true
