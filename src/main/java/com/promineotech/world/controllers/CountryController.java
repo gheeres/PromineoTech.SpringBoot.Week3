@@ -2,6 +2,7 @@ package com.promineotech.world.controllers;
 
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -64,5 +65,24 @@ public class CountryController {
     }
 
     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid country. Fields missing.");
+  }
+  
+  @DeleteMapping(value = "/countries/{code}")
+  public CountryModel delete(@PathVariable String code) {
+    if ((code != null) && (! code.isEmpty())) {
+      CountryModel existing = service.getCountry(code);
+      if (existing != null) {
+        CountryModel country = service.deleteCountry(code);
+        if (country != null) {
+          return country;
+        }
+
+        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "An unhandled exception occured. Country not deleted.");
+      }
+      
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The requested country (%s) does not exist.", code));
+    }
+    
+    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format("Invalid country code. Value: %s", code));
   }
 }

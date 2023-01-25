@@ -45,4 +45,15 @@ public class DefaultWorldService implements WorldService {
     }
     return null;
   }
+
+  @Override
+  public CountryModel deleteCountry(String code) {
+    if ((code != null) && (! code.isEmpty())) {
+      Optional<CountryModel> country = countryRepository.deleteCountry(code);
+      if (country.isPresent()) {
+        return country.get();
+      }
+    }
+    return null;
+  }
 }

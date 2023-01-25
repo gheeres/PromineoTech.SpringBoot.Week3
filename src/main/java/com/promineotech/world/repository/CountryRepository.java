@@ -25,4 +25,11 @@ public interface CountryRepository {
    * @return The create country if successful, otherwise an empty optional.
    */
   Optional<CountryModel> createCountry(CountryInputModel input);
+
+  /**
+   * Removes an existing country.
+   * @param code The ISO 3166 code of the country.
+   * @return The country if delete, otherwise an empty optional.
+   */
+  Optional<CountryModel> deleteCountry(String code);
 }

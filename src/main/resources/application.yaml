@@ -4,3 +4,6 @@ spring:
     url: jdbc:mysql://localhost/myworld
     username: root
     password: password
+app:
+  defaults:
+    continent: Asia

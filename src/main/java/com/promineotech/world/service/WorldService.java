@@ -28,4 +28,11 @@ public interface WorldService {
    * @return The create country if successful, otherwise returns null.
    */
   CountryModel createCountry(CountryInputModel input);
+
+  /**
+   * Deletes an existing country.
+   * @param code The ISO5166 code for the country.
+   * @return The deleted country if successful, otherwise returns null.
+   */
+  CountryModel deleteCountry(String code);
 }
